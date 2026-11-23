@@ -156,51 +156,73 @@ function CompactProject({ project }: { project: Project }) {
   return (
     <article aria-labelledby={`${project.slug}-title`} className={`relative isolate overflow-hidden ${t.bg} ${t.text}`}>
       <t.Field />
-      <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-12 lg:items-center lg:px-12">
-        <div className="lg:col-span-5">
+      <div className="relative mx-auto max-w-[1440px] px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28 lg:px-12">
+        <div className={`flex flex-wrap items-center justify-between gap-4 border-b pb-5 ${t.rule}`}>
           <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 ${t.muted}`}>
             <MonoLabel className={t.text}>{project.index} / 03</MonoLabel>
             <MonoLabel>{project.kind}</MonoLabel>
+            <MonoLabel>{project.category}</MonoLabel>
           </div>
+          <MonoLabel className={`rounded-full border bg-white px-3 py-1 ${t.chip}`}>Case study in progress</MonoLabel>
+        </div>
+
+        {/* Title owns its own row so it never competes with the media frame. */}
+        <Reveal y={30}>
           <h3
             id={`${project.slug}-title`}
-            className="mt-6 font-display text-[clamp(3.5rem,8vw,7rem)] font-medium leading-[0.85] tracking-[-0.05em]"
+            className="relative z-10 mt-8 font-display text-[clamp(3.5rem,12vw,11rem)] font-medium leading-[0.85] tracking-[-0.055em]"
           >
             Pharmacy<span className="text-ink/35">OS</span>
           </h3>
-          <p className="mt-6 font-display text-2xl font-medium tracking-[-0.02em]">{project.tagline}</p>
-          <p className={`mt-4 max-w-md text-[16px] leading-relaxed ${t.muted}`}>{project.description}</p>
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {project.focus.map((f) => (
-              <li key={f} className={`rounded-full border bg-white px-3 py-1.5 text-[13px] ${t.chip}`}>
-                {f}
-              </li>
-            ))}
-          </ul>
-          <p className={`mt-6 text-[14px] ${t.muted}`}>
-            <MonoLabel className="mr-2">Contribution</MonoLabel>
-            {project.contribution.join(' · ')}
-          </p>
-          <Link
-            to={`/work/${project.slug}`}
-            className={`group mt-8 inline-flex items-center gap-3 rounded-full px-6 py-3.5 font-display text-[15px] font-medium transition-colors duration-300 ${t.cta}`}
-          >
-            Open case study
-            <Arrow className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
-        <Reveal className="lg:col-span-7" y={40}>
-          <div className="rounded-[22px] border border-ink/10 bg-white p-2 shadow-[0_30px_80px_-40px_rgba(18,20,28,0.35)]">
-            <MediaPlaceholder
-              src={project.media.cover}
-              alt={`${project.name} interface`}
-              label="PharmacyOS — interface visual"
-              tone="clinical"
-              ratio="16 / 10"
-              className="rounded-2xl"
-            />
-          </div>
         </Reveal>
+
+        <div className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:items-start lg:gap-10">
+          <div className="lg:col-span-4">
+            <Reveal>
+              <p className="font-display text-[clamp(1.6rem,2.4vw,2.2rem)] font-medium leading-[1.1] tracking-[-0.02em]">
+                {project.tagline}
+              </p>
+              <p className={`mt-5 text-[16px] leading-relaxed ${t.muted}`}>{project.description}</p>
+            </Reveal>
+            <Reveal delay={0.1} className={`mt-10 border-t pt-6 ${t.rule}`}>
+              <MonoLabel className={t.muted}>Problem space</MonoLabel>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {project.focus.map((f) => (
+                  <li key={f} className={`rounded-full border bg-white px-3 py-1.5 text-[13px] ${t.chip}`}>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal delay={0.15} className={`mt-8 border-t pt-6 ${t.rule}`}>
+              <MonoLabel className={t.muted}>My contribution</MonoLabel>
+              <p className="mt-3 text-[15px]">{project.contribution.join(' · ')}</p>
+            </Reveal>
+            <Reveal delay={0.2} className="mt-10">
+              <Link
+                to={`/work/${project.slug}`}
+                className={`group inline-flex items-center gap-3 rounded-full px-6 py-3.5 font-display text-[15px] font-medium transition-colors duration-300 ${t.cta}`}
+              >
+                Open case study
+                <Arrow className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </Reveal>
+          </div>
+          <Reveal className="lg:col-span-8" y={40}>
+            <Link to={`/work/${project.slug}`} className="group block rounded-[22px]" aria-label={`Open ${project.name} case study`}>
+              <div className="rounded-[22px] border border-ink/10 bg-white p-2 shadow-[0_30px_80px_-40px_rgba(18,20,28,0.35)] transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-[0.985]">
+                <MediaPlaceholder
+                  src={project.media.cover}
+                  alt={`${project.name} interface`}
+                  label="PharmacyOS — interface visual"
+                  tone="clinical"
+                  ratio="16 / 10"
+                  className="rounded-2xl"
+                />
+              </div>
+            </Link>
+          </Reveal>
+        </div>
       </div>
     </article>
   )
