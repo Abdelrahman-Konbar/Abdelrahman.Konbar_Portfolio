@@ -1,0 +1,32 @@
+{
+  "name": "figma-make-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check package.json src/content src/App.tsx src/data/projects.ts src/data/site.ts src/lib/routeMatcher.ts src/components/DecisionExplorer.tsx src/pages/CaseStudy.tsx src/pages/Home.tsx src/pages/Resume.tsx src/sections/Contact.tsx src/sections/Experience.tsx src/sections/Expertise.tsx src/sections/Hero.tsx src/sections/Philosophy.tsx src/sections/SelectedWork.tsx",
+    "typecheck": "tsc --noEmit",
+    "test:content": "node --experimental-strip-types src/content/repository.smoke.ts",
+    "check": "npm run typecheck && npm run format:check && npm run test:content && npm run build"
+  },
+  "dependencies": {
+    "motion": "^14.14.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "oxfmt": "^0.76.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^8.1.7"
+  }
+}

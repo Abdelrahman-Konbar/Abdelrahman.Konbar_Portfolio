@@ -1,0 +1,10 @@
+{
+  "description": "Explore Abdelrahman Konbar’s product design and engineering portfolio, featuring enterprise SaaS projects, professional experience, resume access, and contact details for hiring teams.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
