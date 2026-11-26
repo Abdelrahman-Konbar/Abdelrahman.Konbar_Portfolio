@@ -1,10 +1,10 @@
 import { LineReveal, MonoLabel, Reveal, SectionTag } from "../components/ui";
-import { contentRepository } from "../content/repository";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 
 export function Experience() {
+  const contentRepository = usePublicContent();
   const experience = contentRepository.getExperience();
-  const content = siteContent.homepage.experience;
+  const content = contentRepository.getHomepageContent().experience;
   return (
     <section
       id="experience"

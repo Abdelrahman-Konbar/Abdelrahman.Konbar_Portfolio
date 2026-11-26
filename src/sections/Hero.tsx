@@ -2,8 +2,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
 import { LivingSystem } from "../components/LivingSystem";
 import { AvailabilityDot, Arrow, btn, EASE, LocalTime, MonoLabel } from "../components/ui";
-import { profile } from "../data/profile";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 import { Link } from "../lib/router";
 
 // Letters arrive scattered and settle into place: complexity becoming order.
@@ -33,7 +32,9 @@ function ScatterWord({ word, delay }: { word: string; delay: number }) {
 }
 
 export function Hero() {
-  const content = siteContent.homepage.hero;
+  const repository = usePublicContent();
+  const content = repository.getHomepageContent().hero;
+  const profile = repository.getSiteSettings();
   const reduce = !!useReducedMotion();
   const [resolved, setResolved] = useState(false);
   const readout = useRef<HTMLSpanElement>(null);

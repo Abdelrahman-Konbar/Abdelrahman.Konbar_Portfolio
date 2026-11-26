@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { contentRepository } from "../content/repository";
+import { usePublicContent } from "../content/publicContent";
 import { Contact } from "../sections/Contact";
 import { Experience } from "../sections/Experience";
 import { Expertise } from "../sections/Expertise";
@@ -8,7 +8,7 @@ import { Philosophy } from "../sections/Philosophy";
 import { SelectedWork } from "../sections/SelectedWork";
 
 export function Home() {
-  const profile = contentRepository.getSiteSettings();
+  const profile = usePublicContent().getSiteSettings();
   useEffect(() => {
     document.title = `${profile.name} — ${profile.role}`;
   }, []);

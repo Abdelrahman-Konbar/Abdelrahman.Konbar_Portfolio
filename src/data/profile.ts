@@ -14,6 +14,7 @@ export const profile = {
   linkedinIsPlaceholder: true,
   // TODO: add the PDF (e.g. place it at /public/resume.pdf and set '/resume.pdf').
   resumePdfUrl: null as string | null,
+  avatarMediaId: null as string | null,
 }
 
 export type Experience = {

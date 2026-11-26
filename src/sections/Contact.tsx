@@ -1,12 +1,13 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useRef, useState } from "react";
 import { Arrow, LineReveal, LocalTime, MonoLabel, Reveal } from "../components/ui";
-import { profile } from "../data/profile";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 import { Link } from "../lib/router";
 
 export function Contact() {
-  const content = siteContent.homepage.contact;
+  const repository = usePublicContent();
+  const content = repository.getHomepageContent().contact;
+  const profile = repository.getSiteSettings();
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const [copied, setCopied] = useState(false);
@@ -125,6 +126,7 @@ export function Contact() {
 }
 
 export function Footer() {
+  const profile = usePublicContent().getSiteSettings();
   return (
     <footer className="bg-obsidian text-steel">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 py-8 text-[13px] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">

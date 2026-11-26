@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { Arrow, LineReveal, MonoLabel, Reveal } from "../components/ui";
-import { contentRepository } from "../content/repository";
+import { usePublicContent } from "../content/publicContent";
 import { Link } from "../lib/router";
 import { siteContent } from "../data/site";
 
 export function Resume() {
+  const contentRepository = usePublicContent();
   const profile = contentRepository.getSiteSettings();
   const experience = contentRepository.getExperience();
   const expertise = contentRepository.getExpertise();

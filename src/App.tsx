@@ -1,14 +1,18 @@
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Nav } from "./components/Nav";
 import { Arrow, EASE } from "./components/ui";
-import { contentRepository } from "./content/repository";
+import { PublicContentProvider, usePublicContent } from "./content/publicContent";
 import { matchPublicRoute } from "./lib/routeMatcher";
 import { Link, RouterProvider, useRouter } from "./lib/router";
 import { CaseStudy } from "./pages/CaseStudy";
 import { Home } from "./pages/Home";
 import { Resume } from "./pages/Resume";
 import { Contact, Footer } from "./sections/Contact";
+import type { Project } from "./data/projects";
+
+// Keep the private application out of the public portfolio bundle.
+const Admin = lazy(() => import("./pages/Admin").then((module) => ({ default: module.Admin })));
 
 function NotFound() {
   return (
@@ -29,9 +33,25 @@ function NotFound() {
   );
 }
 
-function resolve(path: string) {
+function resolve(path: string, getProjectBySlug: (slug: string) => Project | undefined) {
   const route = matchPublicRoute(path);
-  if (route.kind === "home") return { key: "home", node: <Home /> };
+  if (route.kind === "admin")
+    return {
+      key: "admin",
+      node: (
+        <Suspense
+          fallback={
+            <div className="grid min-h-screen place-items-center bg-slate-100 text-slate-700">
+              Loading private workspace…
+            </div>
+          }
+        >
+          <Admin />
+        </Suspense>
+      ),
+      admin: true,
+    };
+  if (route.kind === "home") return { key: "home", node: <Home />, admin: false };
   if (route.kind === "resume")
     return {
       key: "resume",
@@ -41,12 +61,14 @@ function resolve(path: string) {
           <Contact />
         </>
       ),
+      admin: false,
     };
   if (route.kind === "caseStudy") {
-    const project = contentRepository.getProjectBySlug(route.slug);
-    if (project) return { key: `work-${project.slug}`, node: <CaseStudy project={project} /> };
+    const project = getProjectBySlug(route.slug);
+    if (project)
+      return { key: `work-${project.slug}`, node: <CaseStudy project={project} />, admin: false };
   }
-  return { key: "missing", node: <NotFound /> };
+  return { key: "missing", node: <NotFound />, admin: false };
 }
 
 function Page({ children, section }: { children: React.ReactNode; section: string | null }) {
@@ -66,10 +88,11 @@ function Page({ children, section }: { children: React.ReactNode; section: strin
 
 function Routes() {
   const { path, section } = useRouter();
-  const { key, node } = resolve(path);
+  const { getProjectBySlug } = usePublicContent();
+  const { key, node, admin } = resolve(path, getProjectBySlug);
   return (
     <>
-      <Nav />
+      {!admin && <Nav />}
       <AnimatePresence mode="wait" initial={false}>
         <motion.main
           id="main"
@@ -93,7 +116,7 @@ function Routes() {
           transition={{ duration: 0.9, times: [0, 0.4, 0.5, 1], ease: EASE }}
         />
       </AnimatePresence>
-      <Footer />
+      {!admin && <Footer />}
     </>
   );
 }
@@ -102,7 +125,9 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <RouterProvider>
-        <Routes />
+        <PublicContentProvider>
+          <Routes />
+        </PublicContentProvider>
       </RouterProvider>
     </MotionConfig>
   );

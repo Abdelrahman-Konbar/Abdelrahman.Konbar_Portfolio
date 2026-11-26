@@ -2,10 +2,11 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArchitecturalField, ClinicalField, OperationalField } from "../components/Atmospheres";
 import { CompareSlider } from "../components/CompareSlider";
+import { CaseStudyBlocks } from "../components/CaseStudyBlocks";
 import { DecisionExplorer } from "../components/DecisionExplorer";
 import { MediaPlaceholder } from "../components/MediaPlaceholder";
 import { Arrow, EASE, LineReveal, MonoLabel, Reveal } from "../components/ui";
-import { profile } from "../data/profile";
+import { usePublicContent } from "../content/publicContent";
 import { nextProject, sampleDecision, type Project } from "../data/projects";
 import { Link } from "../lib/router";
 
@@ -135,6 +136,7 @@ function useActiveSection() {
 }
 
 export function CaseStudy({ project }: { project: Project }) {
+  const profile = usePublicContent().getSiteSettings();
   const t = heroTheme[project.atmosphere];
   const cs = project.caseStudy;
   const next = nextProject(project.slug);
@@ -594,6 +596,8 @@ export function CaseStudy({ project }: { project: Project }) {
           </div>
         </div>
       </div>
+
+      <CaseStudyBlocks blocks={cs.blocks} />
 
       {/* Next project */}
       <Link

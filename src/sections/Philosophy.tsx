@@ -1,7 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { MonoLabel, Reveal, SectionTag } from "../components/ui";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 
 function Word({
   word,
@@ -21,7 +21,7 @@ function Word({
 }
 
 export function Philosophy() {
-  const { manifesto, tenets } = siteContent.homepage.philosophy;
+  const { manifesto, tenets } = usePublicContent().getHomepageContent().philosophy;
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });

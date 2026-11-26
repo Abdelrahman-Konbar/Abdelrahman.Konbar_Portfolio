@@ -4,8 +4,7 @@ import { ArchitecturalField, ClinicalField, OperationalField } from "../componen
 import { MediaPlaceholder } from "../components/MediaPlaceholder";
 import { Arrow, LineReveal, MonoLabel, Reveal, SectionTag } from "../components/ui";
 import { type Project } from "../data/projects";
-import { contentRepository } from "../content/repository";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 import { Link } from "../lib/router";
 
 const theme = {
@@ -258,8 +257,9 @@ function CompactProject({ project }: { project: Project }) {
 }
 
 export function SelectedWork() {
+  const contentRepository = usePublicContent();
   const projects = contentRepository.getProjects();
-  const content = siteContent.homepage.selectedWork;
+  const content = contentRepository.getHomepageContent().selectedWork;
   return (
     <section id="work" aria-labelledby="work-title" className="scroll-mt-0 bg-obsidian">
       <div className="mx-auto max-w-[1440px] px-5 pb-20 pt-28 sm:px-8 sm:pt-36 lg:px-12">

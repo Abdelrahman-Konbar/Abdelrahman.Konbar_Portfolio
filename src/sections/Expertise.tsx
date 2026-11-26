@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { EASE, LineReveal, MonoLabel, Reveal, SectionTag } from "../components/ui";
-import { contentRepository } from "../content/repository";
-import { siteContent } from "../data/site";
+import { usePublicContent } from "../content/publicContent";
 
 export function Expertise() {
+  const contentRepository = usePublicContent();
   const expertise = contentRepository.getExpertise();
-  const content = siteContent.homepage.expertise;
+  const content = contentRepository.getHomepageContent().expertise;
   const [active, setActive] = useState(1);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const current = expertise[active];

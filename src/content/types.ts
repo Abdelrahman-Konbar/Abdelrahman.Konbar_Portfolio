@@ -21,6 +21,13 @@ export type MediaAsset = {
 };
 
 export type RichTextBlock = { id: string; type: "richText"; order: number; body: string };
+export type HeadingBlock = {
+  id: string;
+  type: "heading";
+  order: number;
+  text: string;
+  level?: 2 | 3;
+};
 export type ImageBlock = {
   id: string;
   type: "image";
@@ -64,6 +71,7 @@ export type OutcomesBlock = { id: string; type: "outcomes"; order: number; items
 
 /** Ordered, CMS-ready blocks. Presentation remains intentionally independent of any CMS vendor. */
 export type CaseStudyBlock =
+  | HeadingBlock
   | RichTextBlock
   | ImageBlock
   | GalleryBlock
