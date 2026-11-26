@@ -175,40 +175,78 @@ function Notice({ value, clear }: { value: string; clear: () => void }) {
 function Login({ setSession }: { setSession: (s: Session | null) => void }) {
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [loading, setLoading] = useState(false);
   const go = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data, error } = await supabase!.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(
-        error.message === "Failed to fetch"
-          ? "The configured Supabase Auth service cannot be reached. Verify VITE_SUPABASE_URL and restart Vite after correcting .env.local."
-          : error.message,
-      );
-    } else setSession(data.session);
+    if (loading) return;
+    setError("");
+    setLoading(true);
+    try {
+      const { data, error: authError } = await supabase!.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (authError) {
+        setError(
+          authError.message === "Failed to fetch"
+            ? "Unable to reach Supabase Auth. Check the network connection and deployment configuration."
+            : authError.message,
+        );
+      } else if (data.session) {
+        setSession(data.session);
+      } else {
+        setError("Sign-in did not return a session. Please try again.");
+      }
+    } catch {
+      setError("Unable to complete sign-in. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
-    <div className="grid min-h-screen place-items-center bg-slate-100 p-5">
-      <form onSubmit={go} className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow">
+    <div className="grid min-h-screen place-items-center bg-slate-100 p-5 text-slate-950">
+      <form
+        onSubmit={go}
+        aria-busy={loading}
+        className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow"
+      >
         <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">
           Private area
         </p>
         <h1 className="text-2xl font-semibold">Sign in</h1>
-        <label>
+        <label htmlFor="admin-email">
           Email
-          <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input
+            id="admin-email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </label>
-        <label>
+        <label htmlFor="admin-password">
           Password
           <Input
+            id="admin-password"
+            name="password"
             type="password"
+            autoComplete="current-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error && <p className="text-sm text-red-700">{error}</p>}
-        <Btn className="w-full">Sign in</Btn>
+        {error && (
+          <p role="alert" className="text-sm text-red-700">
+            {error}
+          </p>
+        )}
+        <Btn type="submit" disabled={loading} className="w-full">
+          {loading ? "Signing in…" : "Sign in"}
+        </Btn>
       </form>
     </div>
   );
@@ -387,18 +425,18 @@ function SiteForm({
       });
   }, [kind, notify]);
   useEffect(() => {
-  if (kind !== "profile") return;
-  void supabase!
-    .from("media_assets")
-    .select("id,alt_text")
-    .eq("is_public", true)
-    .eq("media_type", "image")
-    .order("created_at", { ascending: false })
-    .then(({ data, error }) => {
-      if (error) return notify(error.message);
-      setAvatarOptions(data ?? []);
-    });
-}, [kind, notify]);
+    if (kind !== "profile") return;
+    void supabase!
+      .from("media_assets")
+      .select("id,alt_text")
+      .eq("is_public", true)
+      .eq("media_type", "image")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) return notify(error.message);
+        setAvatarOptions(data ?? []);
+      });
+  }, [kind, notify]);
   const save = async (nextStatus = status) => {
     setSaving(true);
     const published = nextStatus === "published";
@@ -417,58 +455,58 @@ function SiteForm({
   const fields =
     kind === "homepage"
       ? [
-        ["hero.screenReaderHeadline", "Hero accessibility headline", false],
-        ["hero.lines.0", "Hero line 1", false],
-        ["hero.lines.1", "Hero line 2", false],
-        ["hero.lines.2", "Hero line 3", false],
-        ["hero.lines.3", "Hero line 4", false],
-        ["hero.lines.4", "Hero line 5", false],
-        ["hero.role", "Professional role", false],
-        ["hero.description", "Hero description", true],
-        ["hero.meta.basedIn", "Hero location label", false],
-        ["hero.meta.availability", "Hero availability label", false],
-        ["hero.meta.focus", "Hero focus label", false],
-        ["hero.meta.practice", "Hero practice label", false],
-        ["selectedWork.heading.0", "Selected work heading 1", false],
-        ["selectedWork.heading.1", "Selected work heading 2", false],
-        ["selectedWork.heading.2", "Selected work heading 3", false],
-        ["selectedWork.description", "Selected work description", true],
-        ["selectedWork.notice", "Selected work notice", true],
-        ["expertise.heading.0", "Expertise heading 1", false],
-        ["expertise.heading.1", "Expertise heading 2", false],
-        ["expertise.description", "Expertise description", true],
-        ["experience.heading.0", "Experience heading 1", false],
-        ["experience.heading.1", "Experience heading 2", false],
-        ["experience.heading.2", "Experience heading 3", false],
-        ["experience.description", "Experience description", true],
-        ["philosophy.manifesto", "Philosophy manifesto", true],
-        ["philosophy.tenets.0.title", "Philosophy principle I", false],
-        ["philosophy.tenets.0.body", "Principle I description", true],
-        ["philosophy.tenets.1.title", "Philosophy principle II", false],
-        ["philosophy.tenets.1.body", "Principle II description", true],
-        ["philosophy.tenets.2.title", "Philosophy principle III", false],
-        ["philosophy.tenets.2.body", "Principle III description", true],
-        ["contact.availability", "Contact availability", false],
-        ["contact.heading.0", "Contact heading 1", false],
-        ["contact.heading.1", "Contact heading 2", false],
-        ["contact.description", "Contact description", true],
-      ]
+          ["hero.screenReaderHeadline", "Hero accessibility headline", false],
+          ["hero.lines.0", "Hero line 1", false],
+          ["hero.lines.1", "Hero line 2", false],
+          ["hero.lines.2", "Hero line 3", false],
+          ["hero.lines.3", "Hero line 4", false],
+          ["hero.lines.4", "Hero line 5", false],
+          ["hero.role", "Professional role", false],
+          ["hero.description", "Hero description", true],
+          ["hero.meta.basedIn", "Hero location label", false],
+          ["hero.meta.availability", "Hero availability label", false],
+          ["hero.meta.focus", "Hero focus label", false],
+          ["hero.meta.practice", "Hero practice label", false],
+          ["selectedWork.heading.0", "Selected work heading 1", false],
+          ["selectedWork.heading.1", "Selected work heading 2", false],
+          ["selectedWork.heading.2", "Selected work heading 3", false],
+          ["selectedWork.description", "Selected work description", true],
+          ["selectedWork.notice", "Selected work notice", true],
+          ["expertise.heading.0", "Expertise heading 1", false],
+          ["expertise.heading.1", "Expertise heading 2", false],
+          ["expertise.description", "Expertise description", true],
+          ["experience.heading.0", "Experience heading 1", false],
+          ["experience.heading.1", "Experience heading 2", false],
+          ["experience.heading.2", "Experience heading 3", false],
+          ["experience.description", "Experience description", true],
+          ["philosophy.manifesto", "Philosophy manifesto", true],
+          ["philosophy.tenets.0.title", "Philosophy principle I", false],
+          ["philosophy.tenets.0.body", "Principle I description", true],
+          ["philosophy.tenets.1.title", "Philosophy principle II", false],
+          ["philosophy.tenets.1.body", "Principle II description", true],
+          ["philosophy.tenets.2.title", "Philosophy principle III", false],
+          ["philosophy.tenets.2.body", "Principle III description", true],
+          ["contact.availability", "Contact availability", false],
+          ["contact.heading.0", "Contact heading 1", false],
+          ["contact.heading.1", "Contact heading 2", false],
+          ["contact.description", "Contact description", true],
+        ]
       : kind === "profile"
         ? [
-          ["name", "Full name", false],
-          ["firstName", "First name", false],
-          ["lastName", "Last name", false],
-          ["role", "Professional role", false],
-          ["location", "Location", false],
-          ["availability", "Availability", false],
-          ["email", "Email", false],
-          ["linkedinUrl", "LinkedIn URL", false],
-          ["resumePdfUrl", "Resume PDF URL", false],
-        ]
+            ["name", "Full name", false],
+            ["firstName", "First name", false],
+            ["lastName", "Last name", false],
+            ["role", "Professional role", false],
+            ["location", "Location", false],
+            ["availability", "Availability", false],
+            ["email", "Email", false],
+            ["linkedinUrl", "LinkedIn URL", false],
+            ["resumePdfUrl", "Resume PDF URL", false],
+          ]
         : [
-          ["title", "SEO title", false],
-          ["description", "SEO description", true],
-        ];
+            ["title", "SEO title", false],
+            ["description", "SEO description", true],
+          ];
   return (
     <section>
       <h2 className="text-2xl font-semibold">{title}</h2>
@@ -493,24 +531,22 @@ function SiteForm({
           </label>
         ))}
         {kind === "profile" && (
-  <label className="md:col-span-2">
-    Profile photo
-    <select
-      className="mt-1 w-full rounded border border-slate-300 p-2"
-      value={readText(value, "avatarMediaId")}
-      onChange={(e) =>
-        setValue(writeText(value, "avatarMediaId", e.target.value))
-      }
-    >
-      <option value="">No photo (AK)</option>
-      {avatarOptions.map((asset) => (
-        <option key={asset.id} value={asset.id}>
-          {asset.alt_text || asset.id}
-        </option>
-      ))}
-    </select>
-  </label>
-)}
+          <label className="md:col-span-2">
+            Profile photo
+            <select
+              className="mt-1 w-full rounded border border-slate-300 p-2"
+              value={readText(value, "avatarMediaId")}
+              onChange={(e) => setValue(writeText(value, "avatarMediaId", e.target.value))}
+            >
+              <option value="">No photo (AK)</option>
+              {avatarOptions.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.alt_text || asset.id}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         {kind === "profile" && (
           <label className="md:col-span-2">
             Specialisations, one per line
@@ -872,9 +908,7 @@ function ProjectMedia({
         {attached.map((item) => (
           <li key={item.media_id}>
             {item.role} · {(item.media_assets as Row | null)?.alt_text || item.media_id}
-            <Btn onClick={() => void detach(String(item.media_id))}>
-              Remove from project
-            </Btn>
+            <Btn onClick={() => void detach(String(item.media_id))}>Remove from project</Btn>
           </li>
         ))}
       </ul>
@@ -1261,8 +1295,8 @@ function Media({ notify }: { notify: (x: string) => void }) {
           const body = await response.clone().json();
           const places = Array.isArray(body?.usages)
             ? body.usages
-              .map((usage: Row) => `${usage.resource_type}: ${usage.resource_id}`)
-              .join(", ")
+                .map((usage: Row) => `${usage.resource_type}: ${usage.resource_id}`)
+                .join(", ")
             : "a project, case-study block, or resume";
           detail = `Image is in use (${places}) and cannot be deleted.`;
         } catch {
@@ -1342,9 +1376,9 @@ function Expertise({ notify }: { notify: (x: string) => void }) {
       details: Array.isArray(edit.details)
         ? edit.details
         : String(edit.details ?? "")
-          .split("\n")
-          .map((item) => item.trim())
-          .filter(Boolean),
+            .split("\n")
+            .map((item) => item.trim())
+            .filter(Boolean),
       published_at:
         edit.status === "published" ? edit.published_at || new Date().toISOString() : null,
     };
