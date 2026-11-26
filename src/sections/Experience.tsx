@@ -1,9 +1,16 @@
-import { LineReveal, MonoLabel, Reveal, SectionTag } from '../components/ui'
-import { experience } from '../data/profile'
+import { LineReveal, MonoLabel, Reveal, SectionTag } from "../components/ui";
+import { usePublicContent } from "../content/publicContent";
 
 export function Experience() {
+  const contentRepository = usePublicContent();
+  const experience = contentRepository.getExperience();
+  const content = contentRepository.getHomepageContent().experience;
   return (
-    <section id="experience" aria-labelledby="experience-title" className="relative bg-canvas py-28 text-ink sm:py-36">
+    <section
+      id="experience"
+      aria-labelledby="experience-title"
+      className="relative bg-canvas py-28 text-ink sm:py-36"
+    >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
@@ -13,12 +20,17 @@ export function Experience() {
                 id="experience-title"
                 className="mt-10 font-display text-[clamp(2.6rem,5vw,4.6rem)] font-medium leading-[0.92] tracking-[-0.04em]"
               >
-                <LineReveal lines={['Where the', 'practice was', <span className="text-ink/40">built.</span>]} />
+                <LineReveal
+                  lines={[
+                    content.heading[0],
+                    content.heading[1],
+                    <span className="text-ink/40">{content.heading[2]}</span>,
+                  ]}
+                />
               </h2>
               <Reveal delay={0.2}>
                 <p className="mt-8 max-w-sm text-[16px] leading-relaxed text-ink/65">
-                  From agency work on B2B SaaS to founding my own studio — each role sharpened how I approach
-                  complex products.
+                  {content.description}
                 </p>
               </Reveal>
             </div>
@@ -40,12 +52,16 @@ export function Experience() {
                   </div>
                   <div className="sm:col-span-5 sm:pt-7">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <p className="font-display text-[19px] font-medium tracking-[-0.01em]">{e.role}</p>
+                      <p className="font-display text-[19px] font-medium tracking-[-0.01em]">
+                        {e.role}
+                      </p>
                       <span className="rounded-full bg-ink/[0.06] px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink/60">
                         {e.context}
                       </span>
                     </div>
-                    <p className="mt-3 max-w-lg text-[16px] leading-relaxed text-ink/65">{e.summary}</p>
+                    <p className="mt-3 max-w-lg text-[16px] leading-relaxed text-ink/65">
+                      {e.summary}
+                    </p>
                   </div>
                 </div>
               </Reveal>
@@ -55,5 +71,5 @@ export function Experience() {
         </div>
       </div>
     </section>
-  )
+  );
 }

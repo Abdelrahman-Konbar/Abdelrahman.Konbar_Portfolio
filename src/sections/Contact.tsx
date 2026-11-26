@@ -1,25 +1,28 @@
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { useRef, useState } from 'react'
-import { Arrow, LineReveal, LocalTime, MonoLabel, Reveal } from '../components/ui'
-import { profile } from '../data/profile'
-import { Link } from '../lib/router'
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useRef, useState } from "react";
+import { Arrow, LineReveal, LocalTime, MonoLabel, Reveal } from "../components/ui";
+import { usePublicContent } from "../content/publicContent";
+import { Link } from "../lib/router";
 
 export function Contact() {
-  const ref = useRef<HTMLElement>(null)
-  const reduce = useReducedMotion()
-  const [copied, setCopied] = useState(false)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
-  const marqueeX = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['10%', '-25%'])
+  const repository = usePublicContent();
+  const content = repository.getHomepageContent().contact;
+  const profile = repository.getSiteSettings();
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const [copied, setCopied] = useState(false);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
+  const marqueeX = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["10%", "-25%"]);
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(profile.email)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.location.href = `mailto:${profile.email}`
+      window.location.href = `mailto:${profile.email}`;
     }
-  }
+  };
 
   return (
     <section
@@ -35,7 +38,7 @@ export function Contact() {
           <MonoLabel>Contact</MonoLabel>
           <span className="ml-auto inline-flex items-center gap-2 rounded-full bg-obsidian px-3 py-1.5 text-canvas">
             <span className="size-2 rounded-full bg-lime" />
-            <MonoLabel>Available for remote roles</MonoLabel>
+            <MonoLabel>{content.availability}</MonoLabel>
           </span>
         </div>
 
@@ -43,14 +46,13 @@ export function Contact() {
           id="contact-title"
           className="mt-12 font-display text-[clamp(3rem,10vw,10rem)] font-medium leading-[0.86] tracking-[-0.05em]"
         >
-          <LineReveal lines={['Have a complex', 'product? Let’s talk.']} />
+          <LineReveal lines={[content.heading[0], content.heading[1]]} />
         </h2>
 
         <div className="mt-16 grid gap-12 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
             <p className="max-w-md text-lg leading-relaxed text-obsidian/75">
-              I’m looking for remote Product Designer roles on teams building B2B SaaS and enterprise software —
-              where the problems are tangled and the bar for clarity is high.
+              {content.description}
             </p>
           </Reveal>
 
@@ -69,7 +71,7 @@ export function Contact() {
                     onClick={copy}
                     className="rounded-full border border-obsidian/25 px-4 py-2.5 text-[14px] font-medium transition-colors hover:bg-obsidian hover:text-canvas"
                   >
-                    <span aria-live="polite">{copied ? 'Copied' : 'Copy'}</span>
+                    <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
                   </button>
                   <a
                     href={`mailto:${profile.email}`}
@@ -90,7 +92,10 @@ export function Contact() {
                     className="group flex items-center justify-between py-6 font-display text-2xl font-medium tracking-[-0.02em]"
                   >
                     LinkedIn
-                    <Arrow dir="up-right" className="size-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
+                    <Arrow
+                      dir="up-right"
+                      className="size-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+                    />
                   </a>
                 </li>
                 <li className="border-b border-obsidian/20 sm:pl-6">
@@ -117,10 +122,11 @@ export function Contact() {
         </motion.p>
       </div>
     </section>
-  )
+  );
 }
 
 export function Footer() {
+  const profile = usePublicContent().getSiteSettings();
   return (
     <footer className="bg-obsidian text-steel">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-5 py-8 text-[13px] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
@@ -132,11 +138,18 @@ export function Footer() {
             {profile.location} · <LocalTime className="tabular-nums" />
           </span>
           <span>© {new Date().getFullYear()}</span>
-          <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className="text-canvas hover:text-iris">
+          <a
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="text-canvas hover:text-iris"
+          >
             Back to top ↑
           </a>
         </div>
       </div>
     </footer>
-  )
+  );
 }

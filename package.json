@@ -1,15 +1,22 @@
 {
   "name": "figma-make-app",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "format:check": "oxfmt --check package.json scripts src/content src/App.tsx src/data/projects.ts src/data/site.ts src/lib/routeMatcher.ts src/lib/supabase.ts src/vite-env.d.ts src/components/CaseStudyBlocks.tsx src/components/DecisionExplorer.tsx src/pages/Admin.tsx src/pages/CaseStudy.tsx src/pages/Home.tsx src/pages/Resume.tsx src/sections/Contact.tsx src/sections/Experience.tsx src/sections/Expertise.tsx src/sections/Hero.tsx src/sections/Philosophy.tsx src/sections/SelectedWork.tsx",
+    "typecheck": "tsc --noEmit",
+    "test:content": "node --experimental-strip-types src/content/repository.smoke.ts",
+    "content:export": "node --experimental-strip-types scripts/export-approved-content.ts",
+    "content:seed:sql": "node --experimental-strip-types scripts/generate-approved-content-sql.ts",
+    "check": "npm run typecheck && npm run format:check && npm run test:content && npm run build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
     "motion": "^14.14.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

@@ -3,6 +3,7 @@ dist/
 build/
 .cache/
 .env*
+supabase/seed/approved-content.json
 .vite/
 vite.config.*.timestamp-*
 *.tsbuildinfo
