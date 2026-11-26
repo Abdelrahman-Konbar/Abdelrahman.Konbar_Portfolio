@@ -1,8 +1,7 @@
 {
+  "title": "Abdelrahman Konbar | Product Designer",
+  "icons": { "icon": "/branding/favicon-32x32.png" },
   "description": "Explore Abdelrahman Konbar’s product design and engineering portfolio, featuring enterprise SaaS projects, professional experience, resume access, and contact details for hiring teams.",
-  "robots": {
-    "index": false
-  },
   "accessibility": {
     "addBypassLinks": false,
     "ignoreReducedMotion": false

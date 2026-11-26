@@ -90,6 +90,16 @@ function Routes() {
   const { path, section } = useRouter();
   const { getProjectBySlug } = usePublicContent();
   const { key, node, admin } = resolve(path, getProjectBySlug);
+
+  useEffect(() => {
+    if (!admin) return;
+    const directive = document.createElement("meta");
+    directive.name = "robots";
+    directive.content = "noindex, nofollow";
+    document.head.appendChild(directive);
+    return () => directive.remove();
+  }, [admin]);
+
   return (
     <>
       {!admin && <Nav />}
